@@ -3,7 +3,7 @@
 
 # 说明
 该项目是对上述论文的一个复现，并添加了预测代码。以及部分注释。<br>
-源论文：https://arxiv.org/pdf/2112.10070.pdf
+源论文：https://arxiv.org/pdf/2112.10070.pdf<br>
 源代码：https://github.com/ljynlp/w2ner
 
 # 步骤
@@ -32,14 +32,16 @@ python main.py --config ./config/resume-zh.json
 python predict.py --config ./config/resume-zh.json
 ```
 结果：
+```
 +------------+--------+-----------+--------+
 | TEST Final |   F1   | Precision | Recall |
 +------------+--------+-----------+--------+
 |   Label    | 0.9748 |   0.9614  | 0.9906 |
 |   Entity   | 0.9621 |   0.9591  | 0.9650 |
 +------------+--------+-----------+--------+
+```
 
 # Acknowledgement
->> https://github.com/ljynlp/w2ner
+> https://github.com/ljynlp/w2ner
 
 
