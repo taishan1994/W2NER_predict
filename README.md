@@ -20,18 +20,14 @@
 
 ## 2、下载数据
 这里以resume-zh为例，数据下载地址：<a href="https://drive.google.com/drive/folders/1NdvUeIUUL3mlS8QwwnqM628gCK7_0yPv?usp=sharing">link</a>。需要翻墙。<br>
-下载好resume-zh将其放置在data文件夹下。然后执行训练语句：
+下载好resume-zh将其放置在data文件夹下。
+
+## 3、训练、验证及测试
+执行训练语句：
 ```python
 python main.py --config ./config/resume-zh.json
 ```
-训练好后会在主目录下生成model.pt文件。
-
-## 3、预测
-预测的数据处理代码在data_loader.py里面，主运行代码在predict.py里面。执行指令：
-```python
-python predict.py --config ./config/resume-zh.json
-```
-结果：
+训练好后会在主目录下生成model.pt文件。结果：
 ```
 +------------+--------+-----------+--------+
 | TEST Final |   F1   | Precision | Recall |
@@ -39,6 +35,12 @@ python predict.py --config ./config/resume-zh.json
 |   Label    | 0.9748 |   0.9614  | 0.9906 |
 |   Entity   | 0.9621 |   0.9591  | 0.9650 |
 +------------+--------+-----------+--------+
+```
+
+## 4、预测
+预测的数据处理代码在data_loader.py里面，主运行代码在predict.py里面。执行指令：
+```python
+python predict.py --config ./config/resume-zh.json
 ```
 
 # Acknowledgement
