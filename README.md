@@ -92,6 +92,6 @@ texts = [
 > https://github.com/ljynlp/w2ner
 
 # 补充
-[信息抽取三剑客：实体抽取、关系抽取、事件抽取](https://github.com/taishan1994/chinese_information_extraction)
-[基于机器阅读理解的命名实体识别](https://github.com/taishan1994/BERT_MRC_NER_chinese)
-[pytorch_bert_bilstm_crf命名实体识别](https://github.com/taishan1994/pytorch_bert_bilstm_crf_ner)
+[信息抽取三剑客：实体抽取、关系抽取、事件抽取](https://github.com/taishan1994/chinese_information_extraction)<br>
+[基于机器阅读理解的命名实体识别](https://github.com/taishan1994/BERT_MRC_NER_chinese)<br>
+[pytorch_bert_bilstm_crf命名实体识别](https://github.com/taishan1994/pytorch_bert_bilstm_crf_ner)<br>
