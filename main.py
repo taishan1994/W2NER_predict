@@ -67,8 +67,8 @@ class Trainer(object):
             grid_labels = grid_labels[grid_mask2d].contiguous().view(-1)
             outputs = outputs[grid_mask2d].contiguous().view(-1)
 
-            label_result.append(grid_labels)
-            pred_result.append(outputs)
+            label_result.append(grid_labels.cpu())
+            pred_result.append(outputs.cpu())
 
             self.scheduler.step()
 
@@ -115,8 +115,8 @@ class Trainer(object):
                 grid_labels = grid_labels[grid_mask2d].contiguous().view(-1)
                 outputs = outputs[grid_mask2d].contiguous().view(-1)
 
-                label_result.append(grid_labels)
-                pred_result.append(outputs)
+                label_result.append(grid_labels.cpu())
+                pred_result.append(outputs.cpu())
 
         label_result = torch.cat(label_result)
         pred_result = torch.cat(pred_result)
