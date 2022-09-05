@@ -22,18 +22,17 @@ class Trainer(object):
         self.device = device
 
     def predict(self, predict_loader):
-      self.model.eval()
-      predict_result = []
-      with torch.no_grad():
-        for i, data_batch in enumerate(predict_loader):
-          texts = data_batch[-1]
-          data_batch = [data.to(self.device) for data in data_batch[:-1]]
-          bert_inputs, grid_mask2d, pieces2word, dist_inputs, sent_length = data_batch
-          outputs = model(bert_inputs, grid_mask2d, dist_inputs, pieces2word, sent_length)
-          outputs = torch.argmax(outputs, -1)
-          print(outputs)
-          predict_decode(outputs.cpu().numpy(), sent_length.cpu().numpy(), texts)
-
+        self.model.eval()
+        predict_result = []
+        with torch.no_grad():
+            for i, data_batch in enumerate(predict_loader):
+                texts = data_batch[-1]
+                data_batch = [data.to(self.device) for data in data_batch[:-1]]
+                bert_inputs, grid_mask2d, pieces2word, dist_inputs, sent_length = data_batch
+                outputs = model(bert_inputs, grid_mask2d, dist_inputs, pieces2word, sent_length)
+                outputs = torch.argmax(outputs, -1)
+                print(outputs)
+                predict_decode(outputs.cpu().numpy(), sent_length.cpu().numpy(), texts)
 
     def save(self, path):
         torch.save(self.model.state_dict(), path)
@@ -41,64 +40,64 @@ class Trainer(object):
     def load(self, path):
         self.model.load_state_dict(torch.load(path))
 
+
 def predict_decode(outputs, length, texts):
-  entities = []
-  for index, (instance, l, text) in enumerate(zip(outputs, length, texts)):
-      forward_dict = {}
-      head_dict = {}
-      ht_type_dict = {}
-      for i in range(l):
-          for j in range(i + 1, l):
-              if instance[i, j] == 1:
-                  if i not in forward_dict:
-                      forward_dict[i] = [j]
-                  else:
-                      forward_dict[i].append(j)
-      for i in range(l):
-          for j in range(i, l):
-              if instance[j, i] > 1:
-                  ht_type_dict[(i, j)] = instance[j, i]
-                  if i not in head_dict:
-                      head_dict[i] = {j}
-                  else:
-                      head_dict[i].add(j)
+    entities = []
+    for index, (instance, l, text) in enumerate(zip(outputs, length, texts)):
+        forward_dict = {}
+        head_dict = {}
+        ht_type_dict = {}
+        for i in range(l):
+            for j in range(i + 1, l):
+                if instance[i, j] == 1:
+                    if i not in forward_dict:
+                        forward_dict[i] = [j]
+                    else:
+                        forward_dict[i].append(j)
+        for i in range(l):
+            for j in range(i, l):
+                if instance[j, i] > 1:
+                    ht_type_dict[(i, j)] = instance[j, i]
+                    if i not in head_dict:
+                        head_dict[i] = {j}
+                    else:
+                        head_dict[i].add(j)
 
-      predicts = []
+        predicts = []
 
-      def find_entity(key, entity, tails):
-          entity.append(key)
-          if key not in forward_dict:
-              if key in tails:
-                  predicts.append(entity.copy())
-              entity.pop()
-              return
-          else:
-              if key in tails:
-                  predicts.append(entity.copy())
-          for k in forward_dict[key]:
-              find_entity(k, entity, tails)
-          entity.pop()
+        def find_entity(key, entity, tails):
+            entity.append(key)
+            if key not in forward_dict:
+                if key in tails:
+                    predicts.append(entity.copy())
+                entity.pop()
+                return
+            else:
+                if key in tails:
+                    predicts.append(entity.copy())
+            for k in forward_dict[key]:
+                find_entity(k, entity, tails)
+            entity.pop()
 
-      def convert_index_to_text(index, type):
-        text = "-".join([str(i) for i in index])
-        text = text + "-#-{}".format(type)
-        return text
+        def convert_index_to_text(index, type):
+            text = "-".join([str(i) for i in index])
+            text = text + "-#-{}".format(type)
+            return text
 
-      for head in head_dict:
-          find_entity(head, [], head_dict[head])
-      predicts = set([convert_index_to_text(x, ht_type_dict[(x[0], x[-1])]) for x in predicts])
-      tmp = (text, )
-      for pre in predicts:
-        pre = pre.split('-#-')
-        print(pre)
-        print(text)
-        ind = pre[0].split('-')
-        entity = text[int(ind[0]):int(ind[-1])+1]
-        entity_type = config.vocab.id2label[int(pre[1])]
-        tmp += ((entity, entity_type, int(ind[0]), int(ind[-1])),)
-      entities.append(tmp)
-  print(entities)
-
+        for head in head_dict:
+            find_entity(head, [], head_dict[head])
+        predicts = set([convert_index_to_text(x, ht_type_dict[(x[0], x[-1])]) for x in predicts])
+        tmp = (text,)
+        for pre in predicts:
+            pre = pre.split('-#-')
+            print(pre)
+            print(text)
+            ind = pre[0].split('-')
+            entity = text[int(ind[0]):int(ind[-1]) + 1]
+            entity_type = config.vocab.id2label[int(pre[1])]
+            tmp += ((entity, entity_type, int(ind[0]), int(ind[-1])),)
+        entities.append(tmp)
+    print(entities)
 
 
 if __name__ == '__main__':
@@ -169,17 +168,17 @@ if __name__ == '__main__':
     # updates_total = len(datasets[0]) // config.batch_size * config.epochs
 
     texts = [
-      "高勇，男，中国国籍，无境外居留权。",
-      "常见量，男。"
+        "高勇，男，中国国籍，无境外居留权。",
+        "常见量，男。"
     ]
     # 这一步要在model之前创建，因为还有给config添加属性
     predict_dataset = data_loader.load_data_bert_predict(texts, config)
     predict_loader = DataLoader(dataset=predict_dataset,
-                    batch_size=config.batch_size,
-                    collate_fn=data_loader.collate_fn_predict,
-                    shuffle=False,
-                    num_workers=4,
-                    drop_last=False)
+                                batch_size=config.batch_size,
+                                collate_fn=data_loader.collate_fn_predict,
+                                shuffle=False,
+                                num_workers=4,
+                                drop_last=False)
     # updates_total这个参数直接设置为0即可
     updates_total = 0
     logger.info("Building Model")
@@ -204,5 +203,5 @@ if __name__ == '__main__':
     # logger.info("Best TEST F1: {:3.4f}".format(best_test_f1))
     trainer.load("model.pt")
     # trainer.eval("Final", test_loader, True)
-    
+
     trainer.predict(predict_loader)
